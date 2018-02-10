@@ -42,13 +42,21 @@ www IN A 192.168.0.3
 ```
 ## Example of operations using nslookup
 
+Assuming that mini_dns.exe is running at 127.0.0.1.
+
+### Looking up NS record of bunji2.com
+
 ```
 C:\>nslookup -type=NS bunji2.com. 127.0.0.1
 サーバー:  UnKnown
 Address:  127.0.0.1
 
 bunji2.com      nameserver = ns.bunji2.com
+```
 
+### Looking up TXT record of bunji2.com
+
+```
 C:\>nslookup -type=TXT bunji2.com. 127.0.0.1
 サーバー:  UnKnown
 Address:  127.0.0.1
@@ -56,21 +64,32 @@ Address:  127.0.0.1
 bunji2.com      text =
 
         "v=spf1 +ip4:192.168.0.2 -all"
+```
 
+### Looking up MX record of bunji2.com
+
+```
 C:\>nslookup -type=MX bunji2.com. 127.0.0.1
 サーバー:  UnKnown
 Address:  127.0.0.1
 
 bunji2.com      MX preference = 10, mail exchanger = mx.bunji2.com
+```
 
+### Looking up A record of mx.bunji2.com
+
+```
 C:\>nslookup -type=A mx.bunji2.com. 127.0.0.1
 サーバー:  UnKnown
 Address:  127.0.0.1
 
 名前:    mx.bunji2.com
 Address:  192.168.0.2
+```
 
+### Looking up A record of www.bunji2.com
 
+```
 C:\>nslookup -type=A www.bunji2.com. 127.0.0.1
 サーバー:  UnKnown
 Address:  127.0.0.1

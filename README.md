@@ -1,5 +1,6 @@
 # mini_dns
-Mini DNS server
+
+Mini DNS server for small and experimental network.
 
 ## Install
 

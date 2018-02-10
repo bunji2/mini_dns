@@ -1,6 +1,10 @@
+// mini_dns.go
+// Author: Bunji Square
+// Version: 1.0.b
+// Usage: mini_dns -h
+
 package main
 
-// usage: mini_dns -h
 
 import (
 	"bufio"

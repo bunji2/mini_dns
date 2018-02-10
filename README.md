@@ -2,6 +2,12 @@
 
 Mini DNS server for small and experimental network.
 
+## Required library
+
+```
+go get github.com/miekg/dns
+```
+
 ## Install
 
 ```

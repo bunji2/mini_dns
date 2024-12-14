@@ -1,16 +1,16 @@
 // mini_dns.go
 // Author: Bunji Square
-// Version: 1.0.b
+// Version: 1.1.a
 // Usage: mini_dns -h
 
 package main
 
-
 import (
 	"bufio"
-	"fmt"
 	"flag"
+	"fmt"
 	"log"
+
 	//"net"
 	"os"
 	"os/signal"
@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	version       = "1.0.b"
+	version       = "1.1.a"
 	flag1_name    = "zone_file"
 	flag1_default = "./zone.txt"
 	flag1_desc    = "zone file"
@@ -44,8 +44,8 @@ func main() {
 	os.Chdir(filepath.Dir(p))
 
 	zone_file := flag.String(flag1_name, flag1_default, flag1_desc)
-	port      := flag.Int(   flag2_name, flag2_default, flag2_desc)
-	server    := flag.String(flag3_name, flag3_default, flag3_desc)
+	port := flag.Int(flag2_name, flag2_default, flag2_desc)
+	server := flag.String(flag3_name, flag3_default, flag3_desc)
 	flag.Parse()
 
 	log.Println("conf: zone_file =", *zone_file)
@@ -62,17 +62,24 @@ func main() {
 	reader := bufio.NewReaderSize(fp, 2048)
 
 	rrs := []dns.RR{}
-	to := dns.ParseZone(reader, "", "myzone")
-	for x := range to {
-		fmt.Println("#", x.RR)
-		rrs = append(rrs, dns.Copy(x.RR))
+	/*
+		to := dns.ParseZone(reader, "", "myzone")
+		for x := range to {
+			fmt.Println("#", x.RR)
+			rrs = append(rrs, dns.Copy(x.RR))
+		}
+	*/
+	to := dns.NewZoneParser(reader, "", "myzone")
+	for x, ok := to.Next(); ok; x, ok = to.Next() {
+		fmt.Println("#", x)
+		rrs = append(rrs, dns.Copy(x))
 	}
 
-	dns.HandleFunc(".", func (w dns.ResponseWriter, r *dns.Msg) {
+	dns.HandleFunc(".", func(w dns.ResponseWriter, r *dns.Msg) {
 		m := new(dns.Msg)
 		m.SetReply(r)
 		m.Authoritative = true
-	
+
 		for _, q := range r.Question {
 			answers := []dns.RR{}
 			//fmt.Println("q =", q)
@@ -83,14 +90,10 @@ func main() {
 					answers = append(answers, rr)
 				}
 			}
-			if len(answers)==0 && *server != "" {
-				for _, a := range resolver(*server, q.Name, q.Qtype) {
-					answers = append(answers, a)
-				}
+			if len(answers) == 0 && *server != "" {
+				answers = append(answers, resolver(*server, q.Name, q.Qtype)...)
 			}
-			for _, a := range answers {
-				m.Answer = append(m.Answer, a)
-			}
+			m.Answer = append(m.Answer, answers...)
 		}
 		w.WriteMsg(m)
 		log.Println(r)
@@ -104,13 +107,13 @@ func main() {
 		}
 	}()
 
-	sig := make(chan os.Signal)
+	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 	s := <-sig
 	log.Fatalf("Signal (%v) received, stopping\n", s)
 }
 
-func resolver (server, fqdn string, r_type uint16) []dns.RR {
+func resolver(server, fqdn string, r_type uint16) []dns.RR {
 	m1 := new(dns.Msg)
 	m1.Id = dns.Id()
 	//m1.RecursionDesired = true

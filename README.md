@@ -17,9 +17,9 @@ go get github.com/bunji2/mini_dns
 ## Usage
 
 ```
-$ mini_dns.exe -h
-2018/02/10 23:42:07 mini_dns 1.0.b
-Usage of mini_dns:
+$ ./mini_dns -h
+2024/12/14 14:14:37 mini_dns 1.1.a
+Usage of ./mini_dns:
   -port int
         port number (default 53)
   -server string
